@@ -16,11 +16,15 @@ services:
       - key: EMAIL_PASS
         sync: false
 
-  - type: web
+  - type: static
     name: shoxrux-portfolio-client
     env: static
     buildCommand: cd client && npm install && npm run build
-    staticPublishPath: ./client/dist
+    publishPath: client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://shoxrux-portfolio-server.onrender.com
