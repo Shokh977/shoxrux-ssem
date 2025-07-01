@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "multer": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/multer": "^1.4.13",
+    "@vitejs/plugin-react": "^4.6.0"
+  }
+}
