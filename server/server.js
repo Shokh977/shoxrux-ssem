@@ -37,6 +37,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 // Pre-route middleware for additional headers
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', 'true');
