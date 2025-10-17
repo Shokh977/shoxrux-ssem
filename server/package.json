@@ -4,7 +4,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node ./node_modules/nodemon/bin/nodemon.js server.js"
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js server.js",
+    "build": "echo 'Build step completed'"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
