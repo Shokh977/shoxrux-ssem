@@ -22,30 +22,28 @@ connectDB();
 const app = express();
 
 // CORS configuration
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://shoxrux-portfolio-client.onrender.com'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cookie'],
-    exposedHeaders: ['Set-Cookie', 'Authorization']
-};
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+    
+    next();
+});
 
-// Apply CORS before other middleware
-app.use(cors(corsOptions));
-
-// Middleware
+// Apply middleware
 app.use(express.json());
 app.use(cookieParser());
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
-});
-
-// Pre-route middleware for additional headers
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
 });
 
 // Serve static files from uploads directory

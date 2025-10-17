@@ -2,8 +2,9 @@ services:
   - type: web
     name: shoxrux-portfolio-server
     env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && node server.js
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
     plan: free
     healthCheckPath: /api/health
     envVars:
@@ -17,16 +18,3 @@ services:
         sync: false
       - key: EMAIL_PASS
         sync: false
-
-  - type: static
-    name: shoxrux-portfolio-client
-    env: static
-    buildCommand: cd client && npm install && npm run build
-    publishPath: client/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://shoxrux-portfolio-server.onrender.com

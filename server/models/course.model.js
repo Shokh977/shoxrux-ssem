@@ -20,6 +20,38 @@ const commentSchema = new mongoose.Schema({
   timestamps: true
 });
 
+const sectionSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    description: String,
+    videos: [{
+        title: {
+            type: String,
+            required: true
+        },
+        youtubeId: {
+            type: String,
+            required: true
+        },
+        description: String,
+        duration: String,
+        order: {
+            type: Number,
+            required: true
+        },
+        isFree: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    order: {
+        type: Number,
+        required: true
+    }
+});
+
 const courseSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -29,6 +61,7 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    sections: [sectionSchema],
     category: {
         type: String,
         enum: ['beginner', 'intermediate', 'advanced', 'topik', 'speaking', 'writing', 'other'],
