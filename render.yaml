@@ -19,7 +19,7 @@ services:
       - key: EMAIL_PASS
         sync: false
       - key: CLIENT_URL
-        value: https://shoxrux-portfolio-client.onrender.com
+        value: https://shoxrux-sssem.onrender.com
 
   # Frontend static site
   - type: static
@@ -31,4 +31,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: https://shoxrux-portfolio-server.onrender.com
+        value: https://shoxrux-sssem.onrender.com
