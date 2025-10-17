@@ -18,3 +18,17 @@ services:
         sync: false
       - key: EMAIL_PASS
         sync: false
+      - key: CLIENT_URL
+        value: https://shoxrux-portfolio-client.onrender.com
+
+  # Frontend static site
+  - type: static
+    name: shoxrux-portfolio-client
+    env: static
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://shoxrux-portfolio-server.onrender.com
