@@ -22,20 +22,23 @@ connectDB();
 const app = express();
 
 // CORS configuration
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://client-dd2c.onrender.com');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-    
-    next();
-});
+const corsOptions = {
+    origin: function (origin, callback) {
+        const allowedOrigins = 'https://shoxrux-sssem.onrender.com';
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['set-cookie']
+};
+
+app.use(cors(corsOptions));
 
 // Apply middleware
 app.use(express.json());
