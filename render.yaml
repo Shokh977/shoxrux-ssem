@@ -19,7 +19,7 @@ services:
       - key: EMAIL_PASS
         sync: false
       - key: CLIENT_URL
-        value: https://shoxrux-sssem.onrender.com
+        value: https://client-dd2c.onrender.com
 
   # Frontend static site
   - type: static

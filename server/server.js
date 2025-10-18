@@ -23,7 +23,7 @@ const app = express();
 
 // CORS configuration
 app.use((req, res, next) => {
-    const allowedOrigins = ['http://localhost:5173', 'https://shoxruxssem.onrender.com'];
+    const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
