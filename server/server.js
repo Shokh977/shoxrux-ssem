@@ -22,50 +22,44 @@ connectDB();
 const app = express();
 
 // CORS configuration
-const corsOptions = {
-    origin: (origin, callback) => {
-        const allowedOrigins = [
-            'http://localhost:5173',
-            'https://client-dd2c.onrender.com'
-        ];
-        
-        // Allow requests with no origin (mobile apps, curl, etc.)
-        if (!origin) {
-            return callback(null, true);
-        }
-        
-        if (allowedOrigins.includes(origin)) {
+app.use((req, res, next) => {
+    const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
+    const origin = req.headers.origin;
+
+    // Enable CORS for allowed origins
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        res.setHeader('Access-Control-Expose-Headers', 'Content-Length');
+        res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+    }
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    next();
+});
+
+// Apply CORS middleware
+app.use(cors({
+    origin: function(origin, callback) {
+        const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error('CORS not allowed'));
         }
     },
-    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    optionsSuccessStatus: 200
-};
-
-// Apply CORS to all routes
-app.use(cors(corsOptions));
-
-// Handle OPTIONS preflight
-app.options('*', (req, res) => {
-    const origin = req.headers.origin;
-    if (corsOptions.origin && typeof corsOptions.origin === 'function') {
-        corsOptions.origin(origin, (err, allowed) => {
-            if (allowed) {
-                res.header('Access-Control-Allow-Origin', origin);
-                res.header('Access-Control-Allow-Credentials', 'true');
-                res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-                res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-                res.status(200).end();
-            } else {
-                res.status(403).end();
-            }
-        });
-    }
-});
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+}));
 
 // Apply middleware
 // Apply middleware
