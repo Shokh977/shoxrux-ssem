@@ -25,7 +25,7 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:5173',
     'https://client-dd2c.onrender.com',
-    'https://shoxruxssem.onrender.com'
+    'https://shoxrux-portfolio-client.onrender.com'
 ];
 
 app.use(cors({

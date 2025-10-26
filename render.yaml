@@ -35,4 +35,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://shoxruxssem.onrender.com
+        value: https://shoxrux-portfolio-server.onrender.com
