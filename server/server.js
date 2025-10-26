@@ -21,45 +21,46 @@ connectDB();
 
 const app = express();
 
-// CORS configuration
-app.use((req, res, next) => {
-    const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
-    const origin = req.headers.origin;
+// CORS Configuration
+const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
 
-    // Enable CORS for allowed origins
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-        res.setHeader('Access-Control-Expose-Headers', 'Content-Length');
-        res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-    }
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    next();
-});
-
-// Apply CORS middleware
 app.use(cors({
     origin: function(origin, callback) {
-        const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
         if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
+            callback(null, origin);
         } else {
             callback(new Error('CORS not allowed'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+        'Origin',
+        'X-Requested-With',
+        'Content-Type',
+        'Accept',
+        'Authorization',
+        'Access-Control-Allow-Credentials',
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Origin'
+    ],
+    exposedHeaders: ['Content-Length', 'Content-Type'],
+    maxAge: 86400
 }));
+
+// Handle OPTIONS preflight requests
+app.options('*', cors());
+
+// Additional headers middleware
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+    }
+    next();
+});
 
 // Apply middleware
 // Apply middleware
@@ -72,8 +73,15 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static('uploads'));
+// Serve static files from uploads directory with CORS
+app.use('/uploads', (req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+    }
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
