@@ -31,4 +31,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: https://shoxrux-sssem.onrender.com
+        value: https://shoxruxssem.onrender.com
