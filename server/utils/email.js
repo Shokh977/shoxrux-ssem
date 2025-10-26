@@ -1,8 +1,14 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-    console.log('Attempting to send email to:', options.email);
-      // Create transporter
+    console.log('Attempting to send email to:', options.to);
+    
+    // Validate required environment variables
+    if (!process.env.EMAIL_HOST || !process.env.EMAIL_PORT || !process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+        throw new Error('Missing email configuration. Please check environment variables.');
+    }
+    
+    // Create transporter
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -11,7 +17,9 @@ const sendEmail = async (options) => {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
         }
-    });try {
+    });
+    
+    try {
         // Define email options
         const mailOptions = {
             from: `"Shoxrux Korean" <${process.env.EMAIL_FROM}>`,

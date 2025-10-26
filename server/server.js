@@ -96,8 +96,32 @@ app.use('/uploads', (req, res, next) => {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Credentials', 'true');
     }
+    
+    // Check if file exists
+    const filePath = path.join(__dirname, req.path);
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'File not found' });
+    }
+    
     next();
 }, express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+    // Serve client dist if available
+    const clientDist = path.join(__dirname, '..', 'client', 'dist');
+    if (fs.existsSync(clientDist)) {
+        console.log('Serving client from:', clientDist);
+        app.use(express.static(clientDist, { index: false }));
+    }
+
+    // Also serve the public directory if it exists
+    const publicDir = path.join(__dirname, 'public');
+    if (fs.existsSync(publicDir)) {
+        console.log('Serving public from:', publicDir);
+        app.use(express.static(publicDir, { index: false }));
+    }
+}
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
@@ -110,21 +134,31 @@ app.use('/api/profile', require('./routes/profile.routes'));
 app.use('/api/about', require('./routes/about.routes'));
 app.use('/api/subscribers', require('./routes/subscriber.routes'));
 
-// If the server is also hosting the frontend in production, serve the built client and
-// add a catch-all so SPA routes (e.g. /course/xyz) return index.html instead of 404.
-if (process.env.NODE_ENV === 'production') {
-    const clientDist = path.join(__dirname, '..', 'client', 'dist');
-    if (fs.existsSync(clientDist)) {
-        app.use(express.static(clientDist));
-
-        // Catch-all: return index.html for any non-API route
-        app.get('*', (req, res, next) => {
-            // Ignore API routes
-            if (req.path.startsWith('/api')) return next();
-            res.sendFile(path.join(clientDist, 'index.html'));
-        });
+// After all API routes, add SPA fallback for client-side routing
+app.get('*', (req, res, next) => {
+    // Skip API routes and direct file requests
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+        return next();
     }
-}
+
+    // Skip requests for specific file extensions
+    if (req.path.match(/\.(js|css|ico|jpg|jpeg|png|gif|svg|woff|woff2|ttf|eot)$/)) {
+        return next();
+    }
+
+    // In production, try to serve index.html from client dist
+    if (process.env.NODE_ENV === 'production') {
+        const clientDist = path.join(__dirname, '..', 'client', 'dist');
+        const indexPath = path.join(clientDist, 'index.html');
+        
+        if (fs.existsSync(indexPath)) {
+            return res.sendFile(indexPath);
+        }
+    }
+
+    // If we're not in production or can't find index.html, send a 404
+    res.status(404).json({ message: 'Not Found' });
+});
 
 // Error handler
 app.use((err, req, res, next) => {
