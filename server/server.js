@@ -21,32 +21,49 @@ connectDB();
 
 const app = express();
 
-// Enable pre-flight requests for all routes
-app.options('*', cors());
-
 // CORS configuration
-app.use(cors({
-    origin: true, // Allow all origins
+const corsOptions = {
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'https://client-dd2c.onrender.com'
+        ];
+        
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) {
+            return callback(null, true);
+        }
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-    exposedHeaders: ['Access-Control-Allow-Origin'],
-    optionsSuccessStatus: 200,
-    preflightContinue: false
-}));
+    optionsSuccessStatus: 200
+};
 
-// Additional headers for CORS
-app.use((req, res, next) => {
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// Handle OPTIONS preflight
+app.options('*', (req, res) => {
     const origin = req.headers.origin;
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-        res.status(200).send();
-    } else {
-        next();
+    if (corsOptions.origin && typeof corsOptions.origin === 'function') {
+        corsOptions.origin(origin, (err, allowed) => {
+            if (allowed) {
+                res.header('Access-Control-Allow-Origin', origin);
+                res.header('Access-Control-Allow-Credentials', 'true');
+                res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+                res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+                res.status(200).end();
+            } else {
+                res.status(403).end();
+            }
+        });
     }
 });
 
