@@ -21,27 +21,33 @@ connectDB();
 
 const app = express();
 
+// Enable pre-flight requests for all routes
+app.options('*', cors());
+
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://client-dd2c.onrender.com'],
+    origin: true, // Allow all origins
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    optionsSuccessStatus: 200
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Access-Control-Allow-Origin'],
+    optionsSuccessStatus: 200,
+    preflightContinue: false
 }));
 
 // Additional headers for CORS
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    const origin = req.headers.origin;
+    res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     
-    // Handle preflight
     if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+        res.status(200).send();
+    } else {
+        next();
     }
-    next();
 });
 
 // Apply middleware
