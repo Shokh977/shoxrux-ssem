@@ -110,6 +110,22 @@ app.use('/api/profile', require('./routes/profile.routes'));
 app.use('/api/about', require('./routes/about.routes'));
 app.use('/api/subscribers', require('./routes/subscriber.routes'));
 
+// If the server is also hosting the frontend in production, serve the built client and
+// add a catch-all so SPA routes (e.g. /course/xyz) return index.html instead of 404.
+if (process.env.NODE_ENV === 'production') {
+    const clientDist = path.join(__dirname, '..', 'client', 'dist');
+    if (fs.existsSync(clientDist)) {
+        app.use(express.static(clientDist));
+
+        // Catch-all: return index.html for any non-API route
+        app.get('*', (req, res, next) => {
+            // Ignore API routes
+            if (req.path.startsWith('/api')) return next();
+            res.sendFile(path.join(clientDist, 'index.html'));
+        });
+    }
+}
+
 // Error handler
 app.use((err, req, res, next) => {
     console.error('Error:', err);
