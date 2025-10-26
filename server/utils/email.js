@@ -22,8 +22,8 @@ const sendEmail = async (options) => {
     try {
         // Define email options
         const mailOptions = {
-            from: `"Shoxrux Korean" <${process.env.EMAIL_FROM}>`,
-            to: options.email,
+            from: process.env.EMAIL_FROM || `"Shoxrux Korean" <${process.env.EMAIL_USER}>`,
+            to: options.to,
             subject: options.subject,
             text: options.text,
             html: options.html

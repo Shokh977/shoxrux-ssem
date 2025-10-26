@@ -1,5 +1,5 @@
 const Subscriber = require('../models/subscriber.model');
-const { sendEmail } = require('../utils/email');
+const sendEmail = require('../utils/email');
 
 exports.subscribe = async (req, res) => {
   try {
@@ -36,41 +36,23 @@ exports.subscribe = async (req, res) => {
         to: email,
         subject: 'Welcome to Shoxrux 쌤 Newsletter!',
         html: `
-        <div>
-          <h2>Thank you for subscribing!</h2>
-          <p>You'll now receive updates about:</p>
-          <ul>
-            <li>New Korean language courses</li>
-            <li>TOPIK preparation tips</li>
-            <li>Special offers and discounts</li>
-            <li>Korean culture insights</li>
-          </ul>
-          <p>Best regards,<br />Shoxrux 쌤 Team</p>
-        </div>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Thank you for subscribing!</h2>
+            <p>You'll now receive updates about:</p>
+            <ul>
+              <li>New Korean language courses</li>
+              <li>TOPIK preparation tips</li>
+              <li>Special offers and discounts</li>
+              <li>Korean culture insights</li>
+            </ul>
+            <p>Best regards,<br />Shoxrux 쌤 Team</p>
+          </div>
         `
       });
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
       // Continue with subscription process even if email fails
     }
-
-    res.status(200).json({ message: 'Successfully subscribed to the newsletter' });
-  } catch (error) {
-    console.error('Subscription error:', error);
-    res.status(500).json({ message: 'Error processing subscription' });
-  }
-};
-        <h2>Thank you for subscribing!</h2>
-        <p>You'll now receive updates about:</p>
-        <ul>
-          <li>New Korean language courses</li>
-          <li>TOPIK preparation tips</li>
-          <li>Special offers and discounts</li>
-          <li>Korean culture insights</li>
-        </ul>
-        <p>Best regards,<br>Shoxrux 쌤 Team</p>
-      `
-    });
 
     res.status(200).json({ message: 'Successfully subscribed to the newsletter' });
   } catch (error) {
