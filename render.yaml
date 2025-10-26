@@ -29,6 +29,10 @@ services:
     buildCommand: npm install && sh build.sh
     staticPublishPath: dist
     plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://shoxruxssem.onrender.com
