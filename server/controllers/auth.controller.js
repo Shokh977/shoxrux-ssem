@@ -14,9 +14,11 @@ const generateToken = (id) => {
 // Register new user
 exports.register = async (req, res) => {
     try {
+        // Log registration attempt with origin information
         console.log('Registration attempt:', { 
             name: req.body.name, 
-            email: req.body.email 
+            email: req.body.email,
+            origin: req.headers.origin
         });
         
         const errors = validationResult(req);

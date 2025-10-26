@@ -22,7 +22,11 @@ connectDB();
 const app = express();
 
 // CORS Configuration
-const allowedOrigins = ['http://localhost:5173', 'https://client-dd2c.onrender.com'];
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://client-dd2c.onrender.com',
+    'https://shoxruxssem.onrender.com'
+];
 
 app.use(cors({
     origin: function(origin, callback) {
@@ -50,7 +54,19 @@ app.use(cors({
 }));
 
 // Handle OPTIONS preflight requests
-app.options('*', cors());
+app.options('*', (req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
+        res.status(200).send();
+    } else {
+        console.warn(`Rejected CORS preflight request from origin: ${origin}`);
+        res.status(403).json({ message: 'CORS not allowed for this origin' });
+    }
+});
 
 // Additional headers middleware
 app.use((req, res, next) => {
