@@ -6,8 +6,9 @@ const { protect, restrictTo } = require('../middleware/auth.middleware');
 // Admin only routes
 router.use(protect, restrictTo('admin'));
 
-router.get('/users', getAllUsers);
-router.get('/users/stats', getUserStats);
-router.patch('/users/:userId/role', updateUserRole);
+// Get all users and stats
+router.get('/', getAllUsers);
+router.get('/stats', getUserStats);
+router.patch('/:userId/role', updateUserRole);
 
 module.exports = router;

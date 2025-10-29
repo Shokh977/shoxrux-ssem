@@ -35,19 +35,22 @@ exports.auth = async (req, res, next) => {
     }
 };
 
-exports.adminOnly = async (req, res, next) => {
-    try {
+exports.protect = exports.auth;
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Authorization required' });
         }
 
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Admin access required' });
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({ 
+                message: `Access denied. Required role: ${roles.join(' or ')}`
+            });
         }
 
         next();
-    } catch (error) {
-        console.error('Admin auth error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+    };
 };
+
+exports.adminOnly = exports.restrictTo('admin');
