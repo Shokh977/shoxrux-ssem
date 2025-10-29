@@ -133,6 +133,7 @@ app.use('/api/upload', require('./routes/upload.routes'));
 app.use('/api/profile', require('./routes/profile.routes'));
 app.use('/api/about', require('./routes/about.routes'));
 app.use('/api/subscribers', require('./routes/subscriber.routes'));
+app.use('/api/admin', require('./routes/user.routes')); // User management routes
 
 // After all API routes, add SPA fallback for client-side routing
 app.get('*', (req, res, next) => {
