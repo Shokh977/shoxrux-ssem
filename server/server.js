@@ -134,6 +134,7 @@ app.use('/api/profile', require('./routes/profile.routes'));
 app.use('/api/about', require('./routes/about.routes'));
 app.use('/api/subscribers', require('./routes/subscriber.routes'));
 app.use('/api/admin', require('./routes/user.routes')); // User management routes
+app.use('/api/teacher', require('./routes/teacher.routes')); // Teacher routes
 
 // After all API routes, add SPA fallback for client-side routing
 app.get('*', (req, res, next) => {

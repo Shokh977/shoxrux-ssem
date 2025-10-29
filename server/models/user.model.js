@@ -30,6 +30,32 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    teacherInfo: {
+        qualifications: [{
+            type: String
+        }],
+        experience: {
+            type: Number,
+            default: 0
+        },
+        languages: [{
+            type: String
+        }],
+        certificates: [{
+            name: String,
+            issuer: String,
+            date: Date,
+            file: String
+        }]
+    },
+    assignedCourses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
+    activeStudents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     profilePicture: {
         type: String,
         default: ''
