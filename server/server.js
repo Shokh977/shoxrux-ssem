@@ -112,14 +112,25 @@ if (process.env.NODE_ENV === 'production') {
     const clientDist = path.join(__dirname, '..', 'client', 'dist');
     if (fs.existsSync(clientDist)) {
         console.log('Serving client from:', clientDist);
-        app.use(express.static(clientDist, { index: false }));
+        // Serve static files with proper caching
+        app.use(express.static(clientDist, {
+            index: false,
+            maxAge: '1y',
+            etag: true,
+            lastModified: true
+        }));
     }
 
     // Also serve the public directory if it exists
     const publicDir = path.join(__dirname, 'public');
     if (fs.existsSync(publicDir)) {
         console.log('Serving public from:', publicDir);
-        app.use(express.static(publicDir, { index: false }));
+        app.use(express.static(publicDir, {
+            index: false,
+            maxAge: '1y',
+            etag: true,
+            lastModified: true
+        }));
     }
 }
 
@@ -148,17 +159,28 @@ app.get('*', (req, res, next) => {
         return next();
     }
 
-    // In production, try to serve index.html from client dist
+    // Try to serve index.html from client dist in production
     if (process.env.NODE_ENV === 'production') {
         const clientDist = path.join(__dirname, '..', 'client', 'dist');
         const indexPath = path.join(clientDist, 'index.html');
         
         if (fs.existsSync(indexPath)) {
+            // Set cache control headers for index.html
+            res.set({
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            });
             return res.sendFile(indexPath);
         }
     }
 
-    // If we're not in production or can't find index.html, send a 404
+    // For development, if we can't find index.html, forward to development server
+    if (process.env.NODE_ENV !== 'production') {
+        return res.redirect('http://localhost:5173' + req.path);
+    }
+
+    // If all else fails, send a 404
     res.status(404).json({ message: 'Not Found' });
 });
 
